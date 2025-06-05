@@ -6,13 +6,19 @@ import expense
 
 def main():
     expense_file_path = "expenses.csv"
-    budget = 2000
-    # get use input for expense.
+    #get user's budget
+    budget = get_user_budget()
+    # get user's input for expense.
     expense = get_user_expense()
     # write their expense to a file
     save_expense_to_file(expense, expense_file_path)
     # read file and summarize expense
     summarize_expenses(expense_file_path, budget)
+
+def get_user_budget():
+    print("Getting User's Budget \n")
+    user_budget = float(input("Enter your budget monthly budget: "))
+    return user_budget
 
 
 def get_user_expense():
