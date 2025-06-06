@@ -15,18 +15,18 @@ def main():
     # read file and summarize expense
     summarize_expenses(expense_file_path, budget)
 
+
 def get_user_budget():
     # print("\nGetting User's Budget")
+    print("Welcome to the Expense App\n")
     user_budget = float(input("\nEnter your monthly budget: "))
     return user_budget
 
-
-def get_user_expense():
-    # print("\nGetting User's Expense")
+def get_user_expense():    
     expense_name = input("\nEnter expense name: ")
     expense_amount = float(input("Enter expense amount: "))
 
-    print(f"\nYou've entered:" )
+    print(f"\nYou've entered the following:" )
     print(f"Expense Name: {expense_name}")
     print(f"Expense Amount: {expense_amount:.2f}\n")
 
@@ -52,12 +52,11 @@ def get_user_expense():
             print("*** Invalid Category. Please try again. *** \n")
 
 def save_expense_to_file(expense: Expense, expense_file_path):
-    print(f"Saving Expense: {expense} to {expense_file_path}")
     with open(expense_file_path, "a") as f:
         f.write(f"{expense.name}, {expense.category}, {expense.amount}\n")
 
 def summarize_expenses(expense_file_path, budget):
-    print(f"summarizing user expense \n")
+    print(f"\nExpense Summary:")
     expenses = []
     with open(expense_file_path, "r") as f:
         lines = f.readlines()
@@ -82,11 +81,11 @@ def summarize_expenses(expense_file_path, budget):
 
 
     for key, amount in amount_by_category.items():
-        print("Expenses by Category: \n")
-        print(f" {key}: ${amount:.2f} ")
+        print(f"Expenses by Category:")
+        print(f"{key}: ${amount:.2f} ")
 
     total_spent = sum([exp.amount for exp in expenses])
-    print(f"You've spent ${total_spent:.2f} this month.")
+    print(f"\nYou've spent ${total_spent:.2f} this month.")
     remaining_budget = budget - total_spent
     print(f"Your remaining Budget is ${remaining_budget:.2f}")
 
@@ -97,8 +96,14 @@ def summarize_expenses(expense_file_path, budget):
     print("Remaining days in the current month: ", remaining_days)
 
     daily_budget = remaining_budget / remaining_days
+    warning = budget * .80
 
-    print(f"Budget per day: ${daily_budget:.2f}")
+    print(warning)
+    print(total_spent)
+    if total_spent >= warning:
+        print("**** WARNING: YOU'VE SPENT MORE THAN 80% OF YOUR BUDGET ****")
+
+    print(f"Your budget per day: ${daily_budget:.2f}")
 
 if __name__ == "__main__":
     main()
