@@ -17,7 +17,7 @@ def main():
 
 def get_user_budget():
     print("Getting User's Budget \n")
-    user_budget = float(input("Enter your budget monthly budget: "))
+    user_budget = float(input("Enter your monthly budget: "))
     return user_budget
 
 
@@ -93,7 +93,7 @@ def summarize_expenses(expense_file_path, budget):
     days_in_month = calendar.monthrange(now.year, now.month)[1]
     remaining_days = days_in_month - now.day
 
-    print("Reamining days in the current month: ", remaining_days)
+    print("Remaining days in the current month: ", remaining_days)
 
     daily_budget = remaining_budget / remaining_days
 
