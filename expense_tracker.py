@@ -31,7 +31,7 @@ def get_user_expense():
     print(f"Expense Amount: {expense_amount:.2f}\n")
 
     expense_categories = [
-        "Food", "Home", "Work", "Fun", "Misc",
+        "Food", "Home", "Work", "Fun", "Misc", "Travel"
     ]
     
     while True:
@@ -101,7 +101,7 @@ def summarize_expenses(expense_file_path, budget):
     print(warning)
     print(total_spent)
     if total_spent >= warning:
-        print("**** WARNING: YOU'VE SPENT MORE THAN 80% OF YOUR BUDGET ****")
+        print("/n**** WARNING: YOU'VE SPENT MORE THAN 80% OF YOUR BUDGET ****")
 
     print(f"Your budget per day: ${daily_budget:.2f}")
 
