@@ -16,17 +16,19 @@ def main():
     summarize_expenses(expense_file_path, budget)
 
 def get_user_budget():
-    print("Getting User's Budget \n")
-    user_budget = float(input("Enter your monthly budget: "))
+    # print("\nGetting User's Budget")
+    user_budget = float(input("\nEnter your monthly budget: "))
     return user_budget
 
 
 def get_user_expense():
-    print("Getting User's Expense \n")
-    expense_name = input("Enter expense name: ")
+    # print("\nGetting User's Expense")
+    expense_name = input("\nEnter expense name: ")
     expense_amount = float(input("Enter expense amount: "))
 
-    print(f"You've entered {expense_name}, {expense_amount}")
+    print(f"\nYou've entered:" )
+    print(f"Expense Name: {expense_name}")
+    print(f"Expense Amount: {expense_amount:.2f}\n")
 
     expense_categories = [
         "Food", "Home", "Work", "Fun", "Misc",
@@ -39,8 +41,7 @@ def get_user_expense():
 
         value_range = f"[1-{len(expense_categories)}]"
         selected_index = int(input("Enter a category number: "))-1
-        print(range(len(expense_categories)-1))
-        print(selected_index)
+
         if selected_index in range(len(expense_categories) - 1):
             selected_category = expense_categories[selected_index]
             new_expense = Expense(
@@ -51,7 +52,7 @@ def get_user_expense():
             print("*** Invalid Category. Please try again. *** \n")
 
 def save_expense_to_file(expense: Expense, expense_file_path):
-    print(f"savings user expense: {expense} to {expense_file_path}")
+    print(f"Saving Expense: {expense} to {expense_file_path}")
     with open(expense_file_path, "a") as f:
         f.write(f"{expense.name}, {expense.category}, {expense.amount}\n")
 
