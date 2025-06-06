@@ -9,7 +9,8 @@ MONGO_URI = os.getenv("MONGO_URI")
 try:
     client = MongoClient(MONGO_URI) 
     client.server_info() 
-    print("Connected to MongoDB!")
+    db = client["Users"]
+    print("Connected to MongoDB successfully!")
 except Exception as e:
     print("Connection failed:", e)
 
