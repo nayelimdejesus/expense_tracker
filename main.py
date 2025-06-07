@@ -12,10 +12,7 @@ def main():
     if user_choice == 1:
         register_user()
     elif user_choice == 2:
-        print("\n*** Login ***")
-        username = input("Enter username: ")
-        password = input("Enter password: ")
-        login(username, password)
+        login()
 
 if __name__ == "__main__":
     main()
