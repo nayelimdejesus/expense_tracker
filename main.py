@@ -3,7 +3,7 @@ from auth import register_user, login
 
 def main():
     print("Welcome to the Expense App\n")
-    print("Please make a selection:\n")
+    print("Make a Selection: \n")
     print("1 - Register\n")
     print("2 - Login\n")
 
@@ -16,8 +16,6 @@ def main():
         username = input("Enter username: ")
         password = input("Enter password: ")
         login(username, password)
-
-
 
 if __name__ == "__main__":
     main()

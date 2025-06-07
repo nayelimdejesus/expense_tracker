@@ -9,13 +9,15 @@ users_collection = db["users"]
 def register_user():
     while True:
         print("\n*** Register New Account ***")
-        username = input("Enter a username: ")
-        password = input("Enter a password: ")
+        username = input("Enter username: ")
+        email = input("Enter email: ")
+        password = input("Enter password: ")
 
         #if user exist print error and try different username
         user_found = users_collection.find_one({"username":username})
+        email_found = users_collection.find_one({"email":email})
  
-        if user_found == None:
+        if user_found == None and email_found == None:
             users_collection.insert_one({
                 "username": username,
                 "password": password,  
