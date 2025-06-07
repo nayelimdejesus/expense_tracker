@@ -7,20 +7,22 @@ users_collection = db["users"]
 
 #register user
 def register_user():
-    username = input("Enter a username: ")
-    password = input("Enter a password: ")
+    while True:
+        username = input("Enter a username: ")
+        password = input("Enter a password: ")
 
-    #if user exist print error and try different username
-    user_found = users_collection.find_one({"username":username})
+        #if user exist print error and try different username
+        user_found = users_collection.find_one({"username":username})
  
-    if user_found == None:
-        users_collection.insert_one({
-            "username": username,
-            "password": password,  
-            "expenses": []       
-        })
-        print("✅ Registered successfully!")
-        return True
-    else:
-        print("\n*** User Exists ***")
+        if user_found == None:
+            users_collection.insert_one({
+                "username": username,
+                "password": password,  
+                "expenses": []       
+            })
+            print("\nRegistered successfully!\n")
+            return True
+        else:
+            print("\n*** User Exists. Please try again. ***\n")
+
 register_user()
