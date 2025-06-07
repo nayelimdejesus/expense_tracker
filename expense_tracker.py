@@ -17,8 +17,6 @@ def main():
 
 
 def get_user_budget():
-    # print("\nGetting User's Budget")
-    print("Welcome to the Expense App\n")
     user_budget = float(input("\nEnter your monthly budget: "))
     return user_budget
 

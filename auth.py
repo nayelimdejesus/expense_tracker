@@ -8,6 +8,7 @@ users_collection = db["users"]
 #register user
 def register_user():
     while True:
+        print("\n*** Register New Account ***")
         username = input("Enter a username: ")
         password = input("Enter a password: ")
 
@@ -25,4 +26,4 @@ def register_user():
         else:
             print("\n*** User Exists. Please try again. ***\n")
 
-register_user()
+# register_user()

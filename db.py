@@ -10,7 +10,7 @@ try:
     client = MongoClient(MONGO_URI) 
     client.server_info() 
     db = client["Users"]
-    print("Connected to MongoDB successfully!")
+    print("Connected to MongoDB successfully!\n")
 except Exception as e:
-    print("Connection failed:", e)
+    print("Connection failed:\n", e)
 
