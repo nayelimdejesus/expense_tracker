@@ -1,5 +1,5 @@
 import os
-from auth import register_user
+from auth import register_user, login
 
 def main():
     print("Welcome to the Expense App\n")
@@ -11,7 +11,11 @@ def main():
     
     if user_choice == 1:
         register_user()
-
+    elif user_choice == 2:
+        print("\n*** Login ***")
+        username = input("Enter username: ")
+        password = input("Enter password: ")
+        login(username, password)
 
 
 

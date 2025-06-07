@@ -26,4 +26,11 @@ def register_user():
         else:
             print("\n*** User Exists. Please try again. ***\n")
 
+def login(username, password):
+    user_exist = users_collection.find_one({"username":username})
+    if user_exist and user_exist["password"] == password:
+        print(f"Welcome back! {username}")
+    return False
+
+
 # register_user()
