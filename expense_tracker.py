@@ -2,22 +2,38 @@ import calendar
 import datetime
 from expense import Expense
 import expense
+from db import db
 
 
-def main():
-    expense_file_path = "expenses.csv"
-    #get user's budget
-    budget = get_user_budget()
-    # get user's input for expense.
-    expense = get_user_expense()
-    # write their expense to a file
-    save_expense_to_file(expense, expense_file_path)
-    # read file and summarize expense
-    summarize_expenses(expense_file_path, budget)
+# def main():
+#     expense_file_path = "expenses.csv"
+#     #get user's budget
+#     budget = get_user_budget()
+#     # get user's input for expense.
+#     expense = get_user_expense()
+#     # write their expense to a file
+#     save_expense_to_file(expense, expense_file_path)
+#     # read file and summarize expense
+#     summarize_expenses(expense_file_path, budget)
 
 
-def get_user_budget():
+users_collection = db["users"]
+budgets_collection = db["budgets"]
+def get_user_budget(username):
     user_budget = float(input("\nEnter your monthly budget: "))
+    existing = budgets_collection.find_one({"username": username})
+    if existing:
+        budgets_collection.update_one(
+            {"username": username},
+            {"$set": {"budget":user_budget}}
+        )
+        print(f"Updated budget for {username} to {user_budget:.2f}")
+    else:
+        budgets_collection.insert_one({
+            "username": username,
+            "budget": user_budget
+        })
+        print(f"Added budget for {username}: {user_budget:.2f}")
     return user_budget
 
 def get_user_expense():    

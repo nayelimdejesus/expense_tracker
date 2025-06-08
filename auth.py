@@ -36,20 +36,31 @@ def register_user():
         else:
             print("\n*** User Exists. Please try again. ***\n")
 
-def login():
-    while True:
-        print("\n*** Login ***")
-        username = input("Enter username: ")
-        pwd = input("Enter password: ")
+# def login():
+def login(username, pwd):
         user_exist = users_collection.find_one({"username":username})
         user_byte = pwd.encode('utf-8')
         stored_pwd = user_exist['password']
         result = bcrypt.checkpw(user_byte, stored_pwd)
-        if user_exist and result:
+        if user_exist and result and pwd != "":
             print(Fore.GREEN+f"\nWelcome back! {username}")
             return True
         else:
             print(Fore.RED+"\nIncorrect password or username. Please try again.")
+            return False
+    # while True:
+    #     print("\n*** Login ***")
+    #     username = input("Enter username: ")
+    #     pwd = input("Enter password: ")
+    #     user_exist = users_collection.find_one({"username":username})
+    #     user_byte = pwd.encode('utf-8')
+    #     stored_pwd = user_exist['password']
+    #     result = bcrypt.checkpw(user_byte, stored_pwd)
+    #     if user_exist and result and pwd != "":
+    #         print(Fore.GREEN+f"\nWelcome back! {username}")
+    #         return username
+    #     else:
+    #         print(Fore.RED+"\nIncorrect password or username. Please try again.")
 
 
 # register_user()
