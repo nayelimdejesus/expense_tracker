@@ -19,28 +19,28 @@ def main():
         except ValueError:
             print(Fore.RED + "\nPlease enter a valid number.")
 
-    if user_choice == 1:
-        register_user()
-        while True:
-            print("\nWould you like to login?:")
-            print("1 - Yes\n")
-            print("2 - No\n")
-            try:
-                option = int(input("Enter a number: "))
-                if option not in [1,2]:
-                    print(Fore.RED + "\nPlease select either 1 or 2.")
-                    continue
-                break
-            except ValueError:
-                print(Fore.RED + "\nPlease enter a valid number.")
-        if option == 1:
+    match user_choice:
+        case 1:
+            while True:
+                print("\nWould you like to login?:")
+                print("1 - Yes\n")
+                print("2 - No\n")
+                try:
+                    option = int(input("Enter a number: "))
+                    if option not in [1,2]:
+                        print(Fore.RED + "\nPlease select either 1 or 2.")
+                        continue
+                    break
+                except ValueError:
+                    print(Fore.RED + "\nPlease enter a valid number.")
+            if option == 1:
+                username = login()
+                menu(username)
+            else:
+                return False
+        case 2:
             username = login()
             menu(username)
-        else:
-            return False
-    elif user_choice == 2:
-        username = login()
-        menu(username)
 
 
 if __name__ == "__main__":
