@@ -20,12 +20,13 @@ def menu(username):
 
         match option:
             case 1:
+                print(Fore.LIGHTYELLOW_EX+ "\nUpdating / Adding Budget")
                 get_user_budget(username)
             case 2:
-                print("Getting Expense")
-                # get_user_expense(username)
+                print(Fore.LIGHTYELLOW_EX+ "\nAdding Expense")
+                get_user_expense(username)
             case 3: 
-                print("Summarizing Expense")
+                print(Fore.LIGHTYELLOW_EX+ "\nSummarizing Expense")
                 # summarize_expenses()
             case _: 
                 print(Fore.RED + "\nPlease enter a valid number.")
@@ -54,10 +55,17 @@ def get_user_budget(username):
         print(f"Added budget for {username}: {user_budget:.2f}")
     return user_budget
 
-def get_user_expense(username):    
+def get_user_expense(username):
+    budget_exist = expense_collection.find_one({"username": username})
+    if not budget_exist:
+        expense_collection.insert_one({
+        "username": username,
+        "budget": 0.0,
+        "expenses": []
+    })
+        
     expense_name = input("\nEnter expense name: ")
     expense_amount = float(input("Enter expense amount: "))
-        # Insert new budget
 
     print(f"\nYou've entered the following:" )
     print(f"Expense Name: {expense_name}")
@@ -71,27 +79,26 @@ def get_user_expense(username):
         print("Select a category: ")
         for i, category_name in enumerate(expense_categories):
             print(f"  {i + 1}.{category_name}")
-
-        value_range = f"[1-{len(expense_categories)}]"
         selected_index = int(input("Enter a category number: "))-1
 
         if selected_index in range(len(expense_categories) - 1):
             selected_category = expense_categories[selected_index]
-            new_expense = Expense(
-                name=expense_name, category=selected_category, amount=expense_amount
+            new_expense = {
+                "name": expense_name,
+                "amount": expense_amount,
+                "category": category_name
+            }
+
+            expense_collection.update_one(
+                {"username": username},
+                {"$push": {"expenses": new_expense}}
             )
-            expense_collection.insert_one({
-                "username": username,
-                "expenses":[{
-                    "name": expense_name,
-                    "amount": expense_amount,
-                    "category": category_name
-                }]
-                })
-            print(f"Added expense for {username}: {expense_name}, {expense_amount:.2f}, {expense_categories}")
+
+            print(Fore.GREEN + f"Added expense for {username}: {expense_name}, {expense_amount:.2f}, {selected_category}")
             return new_expense
+
         else:
-            print("*** Invalid Category. Please try again. *** \n")
+            print(Fore.RED + "*** Invalid Category. Please try again. *** \n")
 
 def save_expense_to_file(expense: Expense, expense_file_path):
     with open(expense_file_path, "a") as f:
