@@ -1,40 +1,44 @@
 import os
 from auth import register_user, login
-from expense_tracker import get_user_budget, get_user_expense, summarize_expenses
+from expense_tracker import menu
+from colorama import Fore, Back, Style, init
+
 
 def main():
     print("Welcome to the Expense App\n")
-    print("Make a Selection: \n")
-    print("1 - Register\n")
-    print("2 - Login\n")
+    while True:
+        print("Make a Selection:")
+        print("1 - Register\n")
+        print("2 - Login\n")
+        try:
+            user_choice = int(input("Enter a number: "))
+            if user_choice not in [1,2]:
+                print(Fore.RED + "\nPlease select either 1 or 2.")
+                continue
+            break
+        except ValueError:
+            print(Fore.RED + "\nPlease enter a valid number.")
 
-    user_choice = int(input(("Enter a number: ")))
-    
     if user_choice == 1:
         register_user()
-    elif user_choice == 2:
         while True:
-            print("\n*** Login ***")
-            username = input("Enter username: ")
-            pwd = input("Enter password: ")
-            if login(username, pwd):
+            print("\nWould you like to login?:")
+            print("1 - Yes\n")
+            print("2 - No\n")
+            try:
+                option = int(input("Enter a number: "))
+                if option not in [1,2]:
+                    print(Fore.RED + "\nPlease select either 1 or 2.")
+                    continue
                 break
-        print("What would you like to do?")
-        print("1 - Add budget\n")
-        print("2 - Add expense\n")
-        print("3 - Summarize expenses\n")
-
-        option = int(input("Enter a number: "))
-
-        match option:
-            case 1:
-                get_user_budget(username)
-            case 2:
-                get_user_expense()
-            case 3: 
-                summarize_expenses()
-            case _: 
-                print("Error")
+            except ValueError:
+                print(Fore.RED + "\nPlease enter a valid number.")
+        if option == 1:
+            login()
+        else:
+            return False
+    elif user_choice == 2:
+        login()
 
 
 if __name__ == "__main__":
