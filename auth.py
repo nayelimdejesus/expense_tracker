@@ -1,4 +1,5 @@
 import os
+import re
 from pymongo import MongoClient
 from dotenv import load_dotenv
 import bcrypt
@@ -18,7 +19,11 @@ def register_user():
         email = input("Enter email: ")
         password = input("Enter password: ")
 
-        #if user exist print error and try different username
+        valid_email = re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email)
+        if not valid_email:
+             print(Fore.RED+f"\nInvalid email. Please try again.")
+             return False
+        
         user_found = users_collection.find_one({"username":username})
         email_found = users_collection.find_one({"email":email})
 
@@ -31,7 +36,7 @@ def register_user():
                 "password": hash_password,  
                 "expenses": []       
             })
-            print("\nRegistered successfully!\n")
+            print(Fore.GREEN+f"\nRegistered successfully!")
             return True
         else:
             print("\n*** User Exists. Please try again. ***\n")
@@ -39,28 +44,15 @@ def register_user():
 # def login():
 def login(username, pwd):
         user_exist = users_collection.find_one({"username":username})
+        if not user_exist:
+             print(Fore.RED+"\nInvalid credentials. Please try again.")
+             return False
         user_byte = pwd.encode('utf-8')
         stored_pwd = user_exist['password']
         result = bcrypt.checkpw(user_byte, stored_pwd)
-        if user_exist and result and pwd != "":
+        if result and pwd != "":
             print(Fore.GREEN+f"\nWelcome back! {username}")
             return True
         else:
-            print(Fore.RED+"\nIncorrect password or username. Please try again.")
+            print(Fore.RED+"\nInvalid credentials. Please try again.")
             return False
-    # while True:
-    #     print("\n*** Login ***")
-    #     username = input("Enter username: ")
-    #     pwd = input("Enter password: ")
-    #     user_exist = users_collection.find_one({"username":username})
-    #     user_byte = pwd.encode('utf-8')
-    #     stored_pwd = user_exist['password']
-    #     result = bcrypt.checkpw(user_byte, stored_pwd)
-    #     if user_exist and result and pwd != "":
-    #         print(Fore.GREEN+f"\nWelcome back! {username}")
-    #         return username
-    #     else:
-    #         print(Fore.RED+"\nIncorrect password or username. Please try again.")
-
-
-# register_user()
