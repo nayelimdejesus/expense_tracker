@@ -22,7 +22,7 @@ def register_user():
         valid_email = re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email)
         if not valid_email:
              print(Fore.RED+f"\nInvalid email. Please try again.")
-             return False
+             continue
         
         user_found = users_collection.find_one({"username":username})
         email_found = users_collection.find_one({"email":email})
@@ -41,18 +41,19 @@ def register_user():
         else:
             print("\n*** User Exists. Please try again. ***\n")
 
-# def login():
-def login(username, pwd):
+def login():
+    while True:
+        print("\n*** Login ***")
+        username = input("Enter username: ")
+        pwd = input("Enter password: ")
         user_exist = users_collection.find_one({"username":username})
-        if not user_exist:
-             print(Fore.RED+"\nInvalid credentials. Please try again.")
-             return False
-        user_byte = pwd.encode('utf-8')
-        stored_pwd = user_exist['password']
-        result = bcrypt.checkpw(user_byte, stored_pwd)
-        if result and pwd != "":
-            print(Fore.GREEN+f"\nWelcome back! {username}")
-            return True
+        if user_exist:
+            user_byte = pwd.encode('utf-8')
+            stored_pwd = user_exist['password']
+            result = bcrypt.checkpw(user_byte, stored_pwd)
+            if result and pwd != "":
+                print(Fore.GREEN+f"\nWelcome back! {username}")
+                return True
         else:
             print(Fore.RED+"\nInvalid credentials. Please try again.")
-            return False
+            
