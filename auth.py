@@ -33,8 +33,8 @@ def register_user():
             hash_password = bcrypt.hashpw(pwd_byte, salt)
             users_collection.insert_one({
                 "username": username,
-                "password": hash_password,  
-                "expenses": []       
+                "email":email,
+                "password": hash_password
             })
             print(Fore.GREEN+f"\nRegistered successfully!")
             return username

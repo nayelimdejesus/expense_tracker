@@ -21,6 +21,7 @@ def main():
 
     match user_choice:
         case 1:
+            register_user()
             while True:
                 print("\nWould you like to login?:")
                 print("1 - Yes\n")

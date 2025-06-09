@@ -14,49 +14,50 @@ def menu(username):
         print("3 - Summarize expenses\n")
         try:
             option = int(input("Enter a number: "))
-            if option not in [1,2,3]:
-                print(Fore.RED + "\nPlease select either 1 or 2.")
-                continue
-            break
         except ValueError:
             print(Fore.RED + "\nPlease enter a valid number.")
+            continue
 
-    match option:
-        case 1:
-            get_user_budget(username)
-        case 2:
-            get_user_expense()
-        case 3: 
-            summarize_expenses()
-        case _: 
-            print("Error")
+        match option:
+            case 1:
+                get_user_budget(username)
+            case 2:
+                print("Getting Expense")
+                # get_user_expense(username)
+            case 3: 
+                print("Summarizing Expense")
+                # summarize_expenses()
+            case _: 
+                print(Fore.RED + "\nPlease enter a valid number.")
             
             
             
 users_collection = db["users"]
-budgets_collection = db["budgets"]
+expense_collection = db["expenses"]
+
+
 def get_user_budget(username):
     user_budget = float(input("\nEnter your monthly budget: "))
-    existing = budgets_collection.find_one({"username": username})
+    existing = expense_collection.find_one({"username": username})
     if existing:
-
-        budgets_collection.update_one(
+        expense_collection.update_one(
             {"username": username},
-            {"$set": {"budget":user_budget}}
+            {"$set": {"budget": user_budget}}
         )
         print(f"Updated budget for {username} to {user_budget}")
     else:
-        # Insert new budget
-        budgets_collection.insert_one({
+        expense_collection.insert_one({
             "username": username,
-            "budget": user_budget
-        })
+            "budget": user_budget,
+            "expenses": []
+            })
         print(f"Added budget for {username}: {user_budget:.2f}")
     return user_budget
 
-def get_user_expense():    
+def get_user_expense(username):    
     expense_name = input("\nEnter expense name: ")
     expense_amount = float(input("Enter expense amount: "))
+        # Insert new budget
 
     print(f"\nYou've entered the following:" )
     print(f"Expense Name: {expense_name}")
@@ -79,6 +80,15 @@ def get_user_expense():
             new_expense = Expense(
                 name=expense_name, category=selected_category, amount=expense_amount
             )
+            expense_collection.insert_one({
+                "username": username,
+                "expenses":[{
+                    "name": expense_name,
+                    "amount": expense_amount,
+                    "category": category_name
+                }]
+                })
+            print(f"Added expense for {username}: {expense_name}, {expense_amount:.2f}, {expense_categories}")
             return new_expense
         else:
             print("*** Invalid Category. Please try again. *** \n")
@@ -88,7 +98,6 @@ def save_expense_to_file(expense: Expense, expense_file_path):
         f.write(f"{expense.name}, {expense.category}, {expense.amount}\n")
 
 def summarize_expenses(expense_file_path, budget):
-    print(f"\nExpense Summary:")
     expenses = []
     with open(expense_file_path, "r") as f:
         lines = f.readlines()
