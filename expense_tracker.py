@@ -1,34 +1,52 @@
 import calendar
 import datetime
+
+from colorama import Fore, Back, Style, init
 from expense import Expense
 import expense
 from db import db
 
+def menu(username):
+    while True:
+        print("\nWhat would you like to do?")
+        print("1 - Add budget\n")
+        print("2 - Add expense\n")
+        print("3 - Summarize expenses\n")
+        try:
+            option = int(input("Enter a number: "))
+            if option not in [1,2,3]:
+                print(Fore.RED + "\nPlease select either 1 or 2.")
+                continue
+            break
+        except ValueError:
+            print(Fore.RED + "\nPlease enter a valid number.")
 
-# def main():
-#     expense_file_path = "expenses.csv"
-#     #get user's budget
-#     budget = get_user_budget()
-#     # get user's input for expense.
-#     expense = get_user_expense()
-#     # write their expense to a file
-#     save_expense_to_file(expense, expense_file_path)
-#     # read file and summarize expense
-#     summarize_expenses(expense_file_path, budget)
-
-
+    match option:
+        case 1:
+            get_user_budget(username)
+        case 2:
+            get_user_expense()
+        case 3: 
+            summarize_expenses()
+        case _: 
+            print("Error")
+            
+            
+            
 users_collection = db["users"]
 budgets_collection = db["budgets"]
 def get_user_budget(username):
     user_budget = float(input("\nEnter your monthly budget: "))
     existing = budgets_collection.find_one({"username": username})
     if existing:
+
         budgets_collection.update_one(
             {"username": username},
             {"$set": {"budget":user_budget}}
         )
-        print(f"Updated budget for {username} to {user_budget:.2f}")
+        print(f"Updated budget for {username} to {user_budget}")
     else:
+        # Insert new budget
         budgets_collection.insert_one({
             "username": username,
             "budget": user_budget
@@ -118,6 +136,3 @@ def summarize_expenses(expense_file_path, budget):
         print("/n**** WARNING: YOU'VE SPENT MORE THAN 80% OF YOUR BUDGET ****")
 
     print(f"Your budget per day: ${daily_budget:.2f}")
-
-if __name__ == "__main__":
-    main()

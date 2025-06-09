@@ -34,11 +34,13 @@ def main():
             except ValueError:
                 print(Fore.RED + "\nPlease enter a valid number.")
         if option == 1:
-            login()
+            username = login()
+            menu(username)
         else:
             return False
     elif user_choice == 2:
-        login()
+        username = login()
+        menu(username)
 
 
 if __name__ == "__main__":

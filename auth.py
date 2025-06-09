@@ -37,7 +37,7 @@ def register_user():
                 "expenses": []       
             })
             print(Fore.GREEN+f"\nRegistered successfully!")
-            return True
+            return username
         else:
             print("\n*** User Exists. Please try again. ***\n")
 
@@ -52,8 +52,10 @@ def login():
             stored_pwd = user_exist['password']
             result = bcrypt.checkpw(user_byte, stored_pwd)
             if result and pwd != "":
-                print(Fore.GREEN+f"\nWelcome back! {username}")
-                return True
+                print(Fore.GREEN+f"\nLogged in as {username}")
+                return username
+            else:
+                print(Fore.RED+"\nInvalid credentials. Please try again.")
         else:
             print(Fore.RED+"\nInvalid credentials. Please try again.")
             
