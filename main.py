@@ -5,7 +5,7 @@ from colorama import Fore, Back, Style, init
 
 
 def main():
-    print("Welcome to the Expense App\n")
+    print(Fore.LIGHTYELLOW_EX + "Welcome to the Expense App\n")
     while True:
         print("Make a Selection:")
         print("1 - Register\n")

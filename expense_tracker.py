@@ -8,7 +8,7 @@ from db import db
 
 def menu(username):
     while True:
-        print("\nWhat would you like to do?")
+        print(Fore.LIGHTYELLOW_EX + "\nWhat would you like to do?")
         print("1 - Add budget\n")
         print("2 - Add expense\n")
         print("3 - Summarize expenses\n")
@@ -52,7 +52,7 @@ def get_user_budget(username):
             "budget": user_budget,
             "expenses": []
             })
-        print(f"Added budget for {username}: {user_budget:.2f}")
+        print(Fore.GREEN + f"Added budget for {username}: {user_budget:.2f}")
     return user_budget
 
 def get_user_expense(username):

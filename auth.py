@@ -14,7 +14,7 @@ init(autoreset=True)
 #register user
 def register_user():
     while True:
-        print("\n*** Register New Account ***")
+        print(Fore.LIGHTYELLOW_EX + "\n*** Register New Account ***")
         username = input("Enter username: ")
         email = input("Enter email: ")
         password = input("Enter password: ")
@@ -39,11 +39,11 @@ def register_user():
             print(Fore.GREEN+f"\nRegistered successfully!")
             return username
         else:
-            print("\n*** User Exists. Please try again. ***\n")
+            print(Fore.RED + "\n*** User Exists. Please try again. ***\n")
 
 def login():
     while True:
-        print("\n*** Login ***")
+        print(Fore.LIGHTYELLOW_EX + "\n*** Login ***")
         username = input("Enter username: ")
         pwd = input("Enter password: ")
         user_exist = users_collection.find_one({"username":username})
