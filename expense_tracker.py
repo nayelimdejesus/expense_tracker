@@ -114,6 +114,8 @@ def save_expense_to_file(expense: Expense, expense_file_path):
 
 def summarize_expenses(username):
     expenses = expense_collection.find_one({"username": username})
+    budget_add = expenses.get("budget_added", False)
+    
     if not expenses:
         print("No expenses found.")
         return False
@@ -133,8 +135,12 @@ def summarize_expenses(username):
         print(f"{i}: ${k:.2f}")
         total_amount += k
  
-    print(f"\nBudget: {expenses.get("budget", 0.0)}")
-    print(f"Total amount spent: {total_amount:.2f}")
+
+    print(f"\nTotal Spent: ${total_amount:.2f}")
+    if not budget_add:
+        print("Budget: No Budget Added")
+    else:
+        print(f"Budget: {expenses.get("budget", 0.0)}")
     
         
     
