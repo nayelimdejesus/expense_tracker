@@ -50,6 +50,7 @@ def get_user_budget(username):
         expense_collection.insert_one({
             "username": username,
             "budget": user_budget,
+            "budget_added":True,
             "expenses": []
             })
         print(Fore.GREEN + f"Added budget for {username}: {user_budget:.2f}")
@@ -61,6 +62,7 @@ def get_user_expense(username):
         expense_collection.insert_one({
         "username": username,
         "budget": 0.0,
+        "budget_added": False,
         "expenses": []
     })
         
@@ -82,17 +84,13 @@ def get_user_expense(username):
         try:
             selected_index = int(input("Enter a category number: "))
             selected_index -=1
-            print(selected_index)
         except ValueError:
             print(Fore.RED + "\nPlease enter a valid number.")
             continue
   
         # print(range(len(expense_categories)-1))
         if selected_index in range(len(expense_categories)-1):
-            print(selected_index)
-            print(expense_categories[selected_index])
             selected_category = expense_categories[selected_index]
-            print(selected_category)
             new_expense = {
                 "name": expense_name,
                 "amount": expense_amount,
@@ -116,14 +114,13 @@ def save_expense_to_file(expense: Expense, expense_file_path):
 
 def summarize_expenses(username):
     expenses = expense_collection.find_one({"username": username})
+    if not expenses:
+        print("No expenses found.")
+        return False
     user_expense = expenses.get("expenses", [])
-    # print(user_expense)
-    
-    # for i in range(0, len(user_expense)):
-    #     print(user_expense[i]["name"])
-        
-    #for category if category in list, then add total amount of category
-    #for category if category in list, then add total amount of category
+    # budget = {expenses.get("budget", 0.0)}
+    # budget_left = budget
+
     sum_categories = {}
     for i in range(0, len(user_expense)):
         key = user_expense[i]["category"]
@@ -131,11 +128,14 @@ def summarize_expenses(username):
             sum_categories[key] += user_expense[i]["amount"]
         else:
             sum_categories[key] = user_expense[i]["amount"]
-
-    #print out expense categories and amount
+    total_amount = 0.0
     for i, k in sum_categories.items():
         print(f"{i}: ${k:.2f}")
+        total_amount += k
+ 
     print(f"\nBudget: {expenses.get("budget", 0.0)}")
+    print(f"Total amount spent: {total_amount:.2f}")
+    
         
     
     
