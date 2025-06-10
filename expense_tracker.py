@@ -45,6 +45,10 @@ def get_user_budget(username):
             {"username": username},
             {"$set": {"budget": user_budget}}
         )
+        expense_collection.update_one(
+            {"username": username},
+            {"$set": {"budget_added": True}}
+        )
         print(f"Updated budget for {username} to {user_budget}")
     else:
         expense_collection.insert_one({
@@ -143,34 +147,21 @@ def summarize_expenses(username):
         print(f"{i}: ${k:.2f}")
         total_amount += k
  
-
-    print(f"\nTotal Spent: ${total_amount:.2f}")
+    print("\n-----------------------")
+    print(f"Total Spent: ${total_amount:.2f}")
     if not budget_add:
-        print("Budget: No Budget Added")
+        print("Remaining Budget: No Budget Added")
     else:
-        print(f"Budget: {expenses.get("budget", 0.0)}")
+        remaining_budget = expenses.get("budget", 0.0)
+        print(f"Remaining Budget: ${remaining_budget}")
+        now = datetime.datetime.now()
+        days_in_month = calendar.monthrange(now.year, now.month)[1]
+        remaining_days = days_in_month - now.day
+        daily_budget = remaining_budget / remaining_days
+        print(f"Daily Budget: ${daily_budget:.2f}")
+        daily_budget = remaining_budget / remaining_days
+        warning = remaining_budget * .80
+
+        if total_amount >= warning:
+            print(Fore.RED +"WARNING: YOU'VE SPENT MORE THAN 80% OF YOUR BUDGET")
     
-        
-    
-    
-
-    # total_spent = sum([exp.amount for exp in expenses])
-    # print(f"\nYou've spent ${total_spent:.2f} this month.")
-    # remaining_budget = budget - total_spent
-    # print(f"Your remaining Budget is ${remaining_budget:.2f}")
-
-    # now = datetime.datetime.now()
-    # days_in_month = calendar.monthrange(now.year, now.month)[1]
-    # remaining_days = days_in_month - now.day
-
-    # print("Remaining days in the current month: ", remaining_days)
-
-    # daily_budget = remaining_budget / remaining_days
-    # warning = budget * .80
-
-    # print(warning)
-    # print(total_spent)
-    # if total_spent >= warning:
-    #     print("/n**** WARNING: YOU'VE SPENT MORE THAN 80% OF YOUR BUDGET ****")
-
-    # print(f"Your budget per day: ${daily_budget:.2f}")
