@@ -65,6 +65,7 @@ def get_user_expense(username):
         "budget_added": False,
         "expenses": []
     })
+            
         
     expense_name = input("\nEnter expense name: ")
     expense_amount = float(input("Enter expense amount: "))
@@ -103,6 +104,13 @@ def get_user_expense(username):
             )
 
             print(Fore.GREEN + f"Added expense for {username}: {expense_name}, {expense_amount:.2f}, {selected_category}")
+            if budget_exist:
+                stored_budget = budget_exist.get("budget", 0.0)
+                budget = stored_budget - expense_amount
+                expense_collection.update_one(
+                    {"username": username},
+                    {"$set": {"budget": budget}}
+                )
             return new_expense
 
         else:
