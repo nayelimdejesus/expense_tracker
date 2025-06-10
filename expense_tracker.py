@@ -27,7 +27,7 @@ def menu(username):
                 get_user_expense(username)
             case 3: 
                 print(Fore.LIGHTYELLOW_EX+ "\nSummarizing Expense")
-                # summarize_expenses()
+                summarize_expenses(username)
             case _: 
                 print(Fore.RED + "\nPlease enter a valid number.")
             
@@ -78,15 +78,25 @@ def get_user_expense(username):
     while True:
         print("Select a category: ")
         for i, category_name in enumerate(expense_categories):
-            print(f"  {i + 1}.{category_name}")
-        selected_index = int(input("Enter a category number: "))-1
-
-        if selected_index in range(len(expense_categories) - 1):
+            print(f"{i + 1}.{category_name}")
+        try:
+            selected_index = int(input("Enter a category number: "))
+            selected_index -=1
+            print(selected_index)
+        except ValueError:
+            print(Fore.RED + "\nPlease enter a valid number.")
+            continue
+  
+        # print(range(len(expense_categories)-1))
+        if selected_index in range(len(expense_categories)-1):
+            print(selected_index)
+            print(expense_categories[selected_index])
             selected_category = expense_categories[selected_index]
+            print(selected_category)
             new_expense = {
                 "name": expense_name,
                 "amount": expense_amount,
-                "category": category_name
+                "category": selected_category
             }
 
             expense_collection.update_one(
@@ -104,51 +114,49 @@ def save_expense_to_file(expense: Expense, expense_file_path):
     with open(expense_file_path, "a") as f:
         f.write(f"{expense.name}, {expense.category}, {expense.amount}\n")
 
-def summarize_expenses(expense_file_path, budget):
-    expenses = []
-    with open(expense_file_path, "r") as f:
-        lines = f.readlines()
-        for line in lines:
-            print(line)
-            expense_name, expense_category, expense_amount = line.strip().split(",")
-            line_expense = Expense(
-                name= expense_name, 
-                category= expense_category, 
-                amount= float(expense_amount)
-            )
-            expenses.append(line_expense)
-
-      
-    amount_by_category = {}
-    for expense in expenses:
-        key = expense.category
-        if key in amount_by_category:
-            amount_by_category[key] += expense.amount
+def summarize_expenses(username):
+    expenses = expense_collection.find_one({"username": username})
+    user_expense = expenses.get("expenses", [])
+    # print(user_expense)
+    
+    # for i in range(0, len(user_expense)):
+    #     print(user_expense[i]["name"])
+        
+    #for category if category in list, then add total amount of category
+    #for category if category in list, then add total amount of category
+    sum_categories = {}
+    for i in range(0, len(user_expense)):
+        key = user_expense[i]["category"]
+        if key in sum_categories:
+            sum_categories[key] += user_expense[i]["amount"]
         else:
-            amount_by_category[key] = expense.amount
+            sum_categories[key] = user_expense[i]["amount"]
 
+    #print out expense categories and amount
+    for i, k in sum_categories.items():
+        print(f"{i}: ${k:.2f}")
+    print(f"\nBudget: {expenses.get("budget", 0.0)}")
+        
+    
+    
 
-    for key, amount in amount_by_category.items():
-        print(f"Expenses by Category:")
-        print(f"{key}: ${amount:.2f} ")
+    # total_spent = sum([exp.amount for exp in expenses])
+    # print(f"\nYou've spent ${total_spent:.2f} this month.")
+    # remaining_budget = budget - total_spent
+    # print(f"Your remaining Budget is ${remaining_budget:.2f}")
 
-    total_spent = sum([exp.amount for exp in expenses])
-    print(f"\nYou've spent ${total_spent:.2f} this month.")
-    remaining_budget = budget - total_spent
-    print(f"Your remaining Budget is ${remaining_budget:.2f}")
+    # now = datetime.datetime.now()
+    # days_in_month = calendar.monthrange(now.year, now.month)[1]
+    # remaining_days = days_in_month - now.day
 
-    now = datetime.datetime.now()
-    days_in_month = calendar.monthrange(now.year, now.month)[1]
-    remaining_days = days_in_month - now.day
+    # print("Remaining days in the current month: ", remaining_days)
 
-    print("Remaining days in the current month: ", remaining_days)
+    # daily_budget = remaining_budget / remaining_days
+    # warning = budget * .80
 
-    daily_budget = remaining_budget / remaining_days
-    warning = budget * .80
+    # print(warning)
+    # print(total_spent)
+    # if total_spent >= warning:
+    #     print("/n**** WARNING: YOU'VE SPENT MORE THAN 80% OF YOUR BUDGET ****")
 
-    print(warning)
-    print(total_spent)
-    if total_spent >= warning:
-        print("/n**** WARNING: YOU'VE SPENT MORE THAN 80% OF YOUR BUDGET ****")
-
-    print(f"Your budget per day: ${daily_budget:.2f}")
+    # print(f"Your budget per day: ${daily_budget:.2f}")
