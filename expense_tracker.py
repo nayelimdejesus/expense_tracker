@@ -31,10 +31,10 @@ def menu(username):
                 print(Fore.LIGHTYELLOW_EX+ "\nSummarizing Expense")
                 summarize_expenses(username)
             case 4:
-                print("Logging out now ...")
+                print(Fore.LIGHTGREEN_EX+"Logged out")
                 return
             case 5:
-                print("Exiting program now ...")
+                print(Fore.LIGHTGREEN_EX+"Goodbye.")
                 exit(0)
             case _: 
                 print(Fore.RED + "\nPlease enter a valid number.")

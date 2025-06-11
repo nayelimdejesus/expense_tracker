@@ -5,9 +5,9 @@ from colorama import Fore, Back, Style, init
 
 
 def main():
-    print(Fore.LIGHTYELLOW_EX + "Welcome to the Expense App")
+    print(Fore.LIGHTCYAN_EX + Style.BRIGHT+ "Welcome to the Expense App")
     while True:
-        print(Fore.LIGHTYELLOW_EX + "\nMake a Selection:")
+        print(Fore.LIGHTYELLOW_EX +"\nMake a Selection:")
         print("1 - Register\n")
         print("2 - Login\n")
         print("3 - Exit\n")
@@ -21,27 +21,27 @@ def main():
             case 1:
                 register_user()
                 while True:
-                    print("\nWould you like to login?:")
+                    print(Fore.LIGHTYELLOW_EX +"\nWould you like to login?:")
                     print("1 - Yes\n")
                     print("2 - No\n")
                     try:
                         option = int(input("Enter a number: "))
-                        if option not in [1,2]:
-                            print(Fore.RED + "\nPlease select either 1 or 2.")
-                            continue
-                        break
                     except ValueError:
                         print(Fore.RED + "\nPlease enter a valid number.")
-                if option == 1:
-                    username = login()
-                    menu(username)
-                else:
-                    return False
+                        continue
+                    match option:
+                        case 1: 
+                            username = login()
+                            menu(username)
+                        case 2:
+                            return False
+                        case _:
+                            print(Fore.RED + "\nPlease enter a valid number.")
             case 2:
                 username = login()
                 menu(username)
             case 3:
-                print("Exiting program now ...")                
+                print(Fore.LIGHTGREEN_EX+"Goodbye.")                
                 exit(0)
             case _:
                 print(Fore.RED + "\nPlease enter a valid number.")
