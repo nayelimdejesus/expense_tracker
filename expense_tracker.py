@@ -1,5 +1,5 @@
 import calendar
-import datetime
+import datetime 
 
 from colorama import Fore, Back, Style, init
 from expense import Expense
@@ -99,7 +99,8 @@ def get_user_expense(username):
             new_expense = {
                 "name": expense_name,
                 "amount": expense_amount,
-                "category": selected_category
+                "category": selected_category,
+                "date": datetime.datetime.now()
             }
 
             expense_collection.update_one(
@@ -132,10 +133,10 @@ def summarize_expenses(username):
         print("No expenses found.")
         return False
     user_expense = expenses.get("expenses", [])
-    # budget = {expenses.get("budget", 0.0)}
-    # budget_left = budget
 
     sum_categories = {}
+    # for i in range(0, len(user_expense)):
+    #     print(f"\n{user_expense[i]["date"]}")
     for i in range(0, len(user_expense)):
         key = user_expense[i]["category"]
         if key in sum_categories:
@@ -147,13 +148,29 @@ def summarize_expenses(username):
         print(f"{i}: ${k:.2f}")
         total_amount += k
  
-    print("\n-----------------------")
+    print("\n--------------------------------------")
+    
     print(f"Total Spent: ${total_amount:.2f}")
     if not budget_add:
         print("Remaining Budget: No Budget Added")
     else:
+        today = datetime.date.today()
+        start_of_month = datetime.date(today.year,today.month,1)
+        last_day = calendar.monthrange(today.year, today.month)[1]
+        end_of_month = datetime.date(today.year, today.month, last_day)
+        monthly_spent = 0
+
+        for i in range(0, len(user_expense)):
+            if start_of_month <= user_expense[i]["date"].date() <= end_of_month:
+                monthly_spent += user_expense[i]["amount"]
+        print(f"Monthly Total Spent: ${monthly_spent:.2f}")
+        
+        #from june 01, - june 31, total spent 
+        # print("Remaining Budget: ")
+        # print("Daily Budget: ")
+     
         remaining_budget = expenses.get("budget", 0.0)
-        print(f"Remaining Budget: ${remaining_budget}")
+        print(f"Remaining Budget: ${remaining_budget:.2f}")
         now = datetime.datetime.now()
         days_in_month = calendar.monthrange(now.year, now.month)[1]
         remaining_days = days_in_month - now.day
