@@ -12,6 +12,8 @@ def menu(username):
         print("1 - Add budget\n")
         print("2 - Add expense\n")
         print("3 - Summarize expenses\n")
+        print("4 - Logout\n")
+        print("5 - Exit\n")
         try:
             option = int(input("Enter a number: "))
         except ValueError:
@@ -28,6 +30,12 @@ def menu(username):
             case 3: 
                 print(Fore.LIGHTYELLOW_EX+ "\nSummarizing Expense")
                 summarize_expenses(username)
+            case 4:
+                print("Logging out now ...")
+                return
+            case 5:
+                print("Exiting program now ...")
+                exit(0)
             case _: 
                 print(Fore.RED + "\nPlease enter a valid number.")
             
@@ -181,7 +189,7 @@ def summarize_expenses(username):
         days_in_month = calendar.monthrange(now.year, now.month)[1]
         remaining_days = days_in_month - now.day
         daily_budget = remaining_budget / remaining_days
-        print(f"Daily Budget: ${daily_budget:.2f}")
+        # print(f"Daily Budget: ${daily_budget:.2f}")
         daily_budget = remaining_budget / remaining_days
         warning = remaining_budget * .80
 
