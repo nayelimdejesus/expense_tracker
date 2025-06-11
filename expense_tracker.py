@@ -150,25 +150,31 @@ def summarize_expenses(username):
  
     print("\n--------------------------------------")
     
-    print(f"Total Spent: ${total_amount:.2f}")
+    # Getting dates to get yearly total spent, and monthly total spent
+    today = datetime.date.today()
+    start_of_month = datetime.date(today.year,today.month,1)
+    last_day = calendar.monthrange(today.year, today.month)[1]
+    end_of_month = datetime.date(today.year, today.month, last_day)  
+    start_of_year = datetime.date(today.year, 1, 1)
+    end_of_year = datetime.date(today.year, 12, 31)
+    
+    # Gets yearly total spent    
+    yearly_spent = 0
+    for i in range(0, len(user_expense)):
+        if start_of_year <= user_expense[i]["date"].date() <= end_of_year:
+            yearly_spent += user_expense[i]["amount"]
+    print(f"This Year Total Spent: ${yearly_spent:.2f}")
+    
+    # Gets monthly total spent
+    monthly_spent = 0
+    for i in range(0, len(user_expense)):
+        if start_of_month <= user_expense[i]["date"].date() <= end_of_month:
+            monthly_spent += user_expense[i]["amount"]
+    print(f"This Month Total Spent: ${monthly_spent:.2f}")
+        
     if not budget_add:
         print("Remaining Budget: No Budget Added")
     else:
-        today = datetime.date.today()
-        start_of_month = datetime.date(today.year,today.month,1)
-        last_day = calendar.monthrange(today.year, today.month)[1]
-        end_of_month = datetime.date(today.year, today.month, last_day)
-        monthly_spent = 0
-
-        for i in range(0, len(user_expense)):
-            if start_of_month <= user_expense[i]["date"].date() <= end_of_month:
-                monthly_spent += user_expense[i]["amount"]
-        print(f"Monthly Total Spent: ${monthly_spent:.2f}")
-        
-        #from june 01, - june 31, total spent 
-        # print("Remaining Budget: ")
-        # print("Daily Budget: ")
-     
         remaining_budget = expenses.get("budget", 0.0)
         print(f"Remaining Budget: ${remaining_budget:.2f}")
         now = datetime.datetime.now()
