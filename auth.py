@@ -9,21 +9,21 @@ from colorama import Fore, Back, Style, init
 users_collection = db["users"]
 init(autoreset=True)
 
-
-
-#register user
 def register_user():
+    #prompts user to enter registration information
     while True:
-        print(Fore.LIGHTYELLOW_EX + "\n*** Register New Account ***")
+        print(Fore.LIGHTCYAN_EX + Style.BRIGHT+"\nRegister New Account")
         username = input("Enter username: ")
         email = input("Enter email: ")
         password = input("Enter password: ")
 
+        #checks if email is valid
         valid_email = re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email)
         if not valid_email:
              print(Fore.RED+f"\nInvalid email. Please try again.")
              continue
         
+        #checks if email or username do not exist -> create account
         user_found = users_collection.find_one({"username":username})
         email_found = users_collection.find_one({"email":email})
 
@@ -42,10 +42,13 @@ def register_user():
             print(Fore.RED + "\n*** User Exists. Please try again. ***\n")
 
 def login():
+    #prompts user to enter login information
     while True:
-        print(Fore.LIGHTYELLOW_EX + "\n*** Login ***")
+        print(Fore.LIGHTCYAN_EX + Style.BRIGHT+"\nLogin To Your Account")
         username = input("Enter username: ")
         pwd = input("Enter password: ")
+        
+        #if user exist it checks if password matches the password in the database
         user_exist = users_collection.find_one({"username":username})
         if user_exist:
             user_byte = pwd.encode('utf-8')
@@ -54,9 +57,7 @@ def login():
             if result and pwd != "":
                 print(Fore.GREEN+f"\nLogged in as {username}")
                 return username
-            else:
-                print(Fore.RED+"\nInvalid credentials. Please try again.")
-        else:
-            print(Fore.RED+"\nInvalid credentials. Please try again.")
+
+        print(Fore.RED+"\nInvalid credentials. Please try again.")
             
             

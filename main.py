@@ -5,6 +5,7 @@ from colorama import Fore, Back, Style, init
 
 
 def main():
+    # List options for user to choose
     print(Fore.LIGHTCYAN_EX + Style.BRIGHT+ "Welcome to the Expense App")
     while True:
         print(Fore.LIGHTYELLOW_EX +"\nMake a Selection:")
@@ -16,7 +17,8 @@ def main():
         except ValueError:
             print(Fore.RED + "\nPlease enter a valid number.")
             continue
-
+        
+        # Based on the user's menu selection, it calls the corresponding function
         match user_choice:
             case 1:
                 register_user()

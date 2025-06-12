@@ -7,6 +7,7 @@ import expense
 from db import db
 
 def menu(username):
+    # Menu options that display after user logs in
     while True:
         print(Fore.LIGHTYELLOW_EX + "\nWhat would you like to do?")
         print("1 - Add budget\n")
@@ -20,21 +21,22 @@ def menu(username):
             print(Fore.RED + "\nPlease enter a valid number.")
             continue
 
+        # Based on the user's menu selection, it calls the corresponding function
         match option:
             case 1:
-                print(Fore.LIGHTYELLOW_EX+ "\nUpdating / Adding Budget")
+                print(Fore.LIGHTCYAN_EX + Style.BRIGHT+ "\nUpdating / Adding Budget")
                 get_user_budget(username)
             case 2:
-                print(Fore.LIGHTYELLOW_EX+ "\nAdding Expense")
+                print(Fore.LIGHTCYAN_EX + Style.BRIGHT+ "\nAdding Expense")
                 get_user_expense(username)
             case 3: 
-                print(Fore.LIGHTYELLOW_EX+ "\nSummarizing Expense")
+                print(Fore.LIGHTCYAN_EX + Style.BRIGHT+ "\nSummarizing Expense")
                 summarize_expenses(username)
             case 4:
-                print(Fore.LIGHTGREEN_EX+"Logged out")
+                print(Fore.LIGHTCYAN_EX + Style.BRIGHT+"Logged out")
                 return
             case 5:
-                print(Fore.LIGHTGREEN_EX+"Goodbye.")
+                print(Fore.LIGHTCYAN_EX + Style.BRIGHT+"Goodbye.")
                 exit(0)
             case _: 
                 print(Fore.RED + "\nPlease enter a valid number.")
@@ -44,9 +46,9 @@ def menu(username):
 users_collection = db["users"]
 expense_collection = db["expenses"]
 
-
+# Gets the user's monthly budget
 def get_user_budget(username):
-    user_budget = float(input("\nEnter your monthly budget: "))
+    user_budget = float(input("Enter your monthly budget: "))
     existing = expense_collection.find_one({"username": username})
     if existing:
         expense_collection.update_one(
@@ -68,6 +70,7 @@ def get_user_budget(username):
         print(Fore.GREEN + f"Added budget for {username}: {user_budget:.2f}")
     return user_budget
 
+# Get's users expense information like: expense name, expense amount, category
 def get_user_expense(username):
     budget_exist = expense_collection.find_one({"username": username})
     if not budget_exist:
@@ -79,9 +82,10 @@ def get_user_expense(username):
     })
             
         
-    expense_name = input("\nEnter expense name: ")
+    expense_name = input("Enter expense name: ")
     expense_amount = float(input("Enter expense amount: "))
-
+    
+    # Displays expense name, and amount that user had entered
     print(f"\nYou've entered the following:" )
     print(f"Expense Name: {expense_name}")
     print(f"Expense Amount: {expense_amount:.2f}\n")
@@ -90,6 +94,7 @@ def get_user_expense(username):
         "Food", "Home", "Work", "Fun", "Misc", "Travel"
     ]
     
+    # Prompts user to select an expense category
     while True:
         print("Select a category: ")
         for i, category_name in enumerate(expense_categories):
@@ -101,7 +106,7 @@ def get_user_expense(username):
             print(Fore.RED + "\nPlease enter a valid number.")
             continue
   
-        # print(range(len(expense_categories)-1))
+        # if the selected category is valid then it'll create a new expense
         if selected_index in range(len(expense_categories)-1):
             selected_category = expense_categories[selected_index]
             new_expense = {
@@ -110,16 +115,18 @@ def get_user_expense(username):
                 "category": selected_category,
                 "date": datetime.datetime.now()
             }
-
             expense_collection.update_one(
                 {"username": username},
                 {"$push": {"expenses": new_expense}}
             )
 
             print(Fore.GREEN + f"Added expense for {username}: {expense_name}, {expense_amount:.2f}, {selected_category}")
+            
             if budget_exist:
                 stored_budget = budget_exist.get("budget", 0.0)
+                # Subtract the expense amount from the current budget
                 budget = stored_budget - expense_amount
+                # Update the budget value in the database with the new amount
                 expense_collection.update_one(
                     {"username": username},
                     {"$set": {"budget": budget}}
@@ -129,22 +136,22 @@ def get_user_expense(username):
         else:
             print(Fore.RED + "*** Invalid Category. Please try again. *** \n")
 
-def save_expense_to_file(expense: Expense, expense_file_path):
-    with open(expense_file_path, "a") as f:
-        f.write(f"{expense.name}, {expense.category}, {expense.amount}\n")
+# def save_expense_to_file(expense: Expense, expense_file_path):
+#     with open(expense_file_path, "a") as f:
+#         f.write(f"{expense.name}, {expense.category}, {expense.amount}\n")
 
 def summarize_expenses(username):
     expenses = expense_collection.find_one({"username": username})
     budget_add = expenses.get("budget_added", False)
     
+    # If the user has not added any expenses, display "No expenses found"
     if not expenses:
         print("No expenses found.")
         return False
     user_expense = expenses.get("expenses", [])
 
+    # Add the expenses amount based on category
     sum_categories = {}
-    # for i in range(0, len(user_expense)):
-    #     print(f"\n{user_expense[i]["date"]}")
     for i in range(0, len(user_expense)):
         key = user_expense[i]["category"]
         if key in sum_categories:
