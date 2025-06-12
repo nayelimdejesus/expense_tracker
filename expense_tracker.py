@@ -142,13 +142,13 @@ def get_user_expense(username):
 
 def summarize_expenses(username):
     expenses = expense_collection.find_one({"username": username})
-    budget_add = expenses.get("budget_added", False)
     
     # If the user has not added any expenses, display "No expenses found"
-    if not expenses:
+    if not expenses or not expenses.get("expenses"):
         print("No expenses found.")
         return False
     user_expense = expenses.get("expenses", [])
+    budget_add = expenses.get("budget_added", False)
 
     # Add the expenses amount based on category
     sum_categories = {}
@@ -195,8 +195,6 @@ def summarize_expenses(username):
         now = datetime.datetime.now()
         days_in_month = calendar.monthrange(now.year, now.month)[1]
         remaining_days = days_in_month - now.day
-        daily_budget = remaining_budget / remaining_days
-        # print(f"Daily Budget: ${daily_budget:.2f}")
         daily_budget = remaining_budget / remaining_days
         warning = remaining_budget * .80
 
