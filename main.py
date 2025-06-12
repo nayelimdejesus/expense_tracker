@@ -24,7 +24,10 @@ def main():
                 register_user()
             case 2:
                 username = login()
-                menu(username)
+                if username:
+                    menu(username)
+                else:
+                    continue
             case 3:
                 print(Fore.LIGHTGREEN_EX+"Goodbye.")                
                 exit(0)

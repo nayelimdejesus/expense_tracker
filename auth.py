@@ -12,7 +12,8 @@ init(autoreset=True)
 
 def register_user():
     #prompts user to enter registration information
-    while True:
+    count = 0
+    while count <= 3:
         print(Fore.LIGHTCYAN_EX + Style.BRIGHT+"\nRegister New Account")
         username = input("Enter username: ")
         email = input("Enter email: ")
@@ -39,12 +40,19 @@ def register_user():
             })
             print(Fore.GREEN+f"\nRegistered successfully! Returning to Main Menu ...")
             return username
-        else:
+        
+        count += 1
+        if count == 3:
+            print(Fore.RED + Style.BRIGHT + "\nToo many failed attempts. Returning to Main Menu ...")
+            return
+        else: 
             print(Fore.RED + "\n*** User Exists. Please try again. ***\n")
+            
 
 def login():
     #prompts user to enter login information
-    while True:
+    count = 0
+    while count <= 3:
         print(Fore.LIGHTCYAN_EX + Style.BRIGHT+"\nLogin To Your Account")
         username = input("Enter username: ")
         pwd = getpass.getpass("Enter password: ")
@@ -58,7 +66,14 @@ def login():
             if result and pwd != "":
                 print(Fore.GREEN+f"\nLogged in as {username}")
                 return username
+        
+        count += 1
+        if count == 3:
+            print(Fore.RED + Style.BRIGHT + "\nToo many failed attempts. Returning to Main Menu ...")
+            return 
+        else:
+            print(Fore.RED + "\nInvalid credentials. Please try again.")
+            
 
-        print(Fore.RED+"\nInvalid credentials. Please try again.")
             
             

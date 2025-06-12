@@ -100,14 +100,13 @@ def get_user_expense(username):
         for i, category_name in enumerate(expense_categories):
             print(f"{i + 1}.{category_name}")
         try:
-            selected_index = int(input("Enter a category number: "))
-            selected_index -=1
+            selected_index = int(input("Enter a category number: ")) - 1
         except ValueError:
             print(Fore.RED + "\nPlease enter a valid number.")
             continue
   
         # if the selected category is valid then it'll create a new expense
-        if selected_index in range(len(expense_categories)-1):
+        if selected_index in range(len(expense_categories)):
             selected_category = expense_categories[selected_index]
             new_expense = {
                 "name": expense_name,
