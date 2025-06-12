@@ -37,7 +37,7 @@ def register_user():
                 "email":email,
                 "password": hash_password
             })
-            print(Fore.GREEN+f"\nRegistered successfully!")
+            print(Fore.GREEN+f"\nRegistered successfully! Returning to Main Menu ...")
             return username
         else:
             print(Fore.RED + "\n*** User Exists. Please try again. ***\n")

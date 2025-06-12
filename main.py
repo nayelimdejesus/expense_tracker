@@ -22,23 +22,6 @@ def main():
         match user_choice:
             case 1:
                 register_user()
-                while True:
-                    print(Fore.LIGHTYELLOW_EX +"\nWould you like to login?:")
-                    print("1 - Yes\n")
-                    print("2 - No\n")
-                    try:
-                        option = int(input("Enter a number: "))
-                    except ValueError:
-                        print(Fore.RED + "\nPlease enter a valid number.")
-                        continue
-                    match option:
-                        case 1: 
-                            username = login()
-                            menu(username)
-                        case 2:
-                            return False
-                        case _:
-                            print(Fore.RED + "\nPlease enter a valid number.")
             case 2:
                 username = login()
                 menu(username)
