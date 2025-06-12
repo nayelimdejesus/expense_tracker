@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 import bcrypt
 from db import db
 from colorama import Fore, Back, Style, init
+import getpass
 
 users_collection = db["users"]
 init(autoreset=True)
@@ -46,7 +47,7 @@ def login():
     while True:
         print(Fore.LIGHTCYAN_EX + Style.BRIGHT+"\nLogin To Your Account")
         username = input("Enter username: ")
-        pwd = input("Enter password: ")
+        pwd = getpass.getpass("Enter password: ")
         
         #if user exist it checks if password matches the password in the database
         user_exist = users_collection.find_one({"username":username})
