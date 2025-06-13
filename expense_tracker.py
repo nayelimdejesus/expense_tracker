@@ -48,9 +48,11 @@ expense_collection = db["expenses"]
 
 # Gets the user's monthly budget
 def get_user_budget(username):
-    user_budget = float(input("Enter your monthly budget: "))
     existing = expense_collection.find_one({"username": username})
-    if existing:
+    if existing: 
+        existing_budget = existing.get("budget", 0.0)
+        print(Fore.LIGHTMAGENTA_EX + f"Your current budget is set to ${existing_budget:.2f}")
+        user_budget = float(input("\nEnter your new monthly budget: "))
         expense_collection.update_one(
             {"username": username},
             {"$set": {"budget": user_budget}}
@@ -59,8 +61,10 @@ def get_user_budget(username):
             {"username": username},
             {"$set": {"budget_added": True}}
         )
-        print(f"Updated budget for {username} to {user_budget}")
+        print(Fore.LIGHTGREEN_EX + f"\nUpdated budget to {user_budget}")
+
     else:
+        user_budget = float(input("Enter your monthly budget: "))
         expense_collection.insert_one({
             "username": username,
             "budget": user_budget,
@@ -197,8 +201,10 @@ def summarize_expenses(username):
         days_in_month = calendar.monthrange(now.year, now.month)[1]
         remaining_days = days_in_month - now.day
         daily_budget = remaining_budget / remaining_days
+        # 80% of budget
         warning = remaining_budget * .80
 
         if total_amount >= warning:
             print(Fore.RED +"\nWARNING: YOU'VE SPENT MORE THAN 80% OF YOUR BUDGET")
+        
     
