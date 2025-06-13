@@ -12,7 +12,7 @@ def menu(username):
         print(Fore.LIGHTYELLOW_EX + "\nWhat would you like to do?")
         print("1 - Add budget\n")
         print("2 - Add expense\n")
-        print("3 - Summarize expenses\n")
+        print("3 - Expense Summary\n")
         print("4 - Logout\n")
         print("5 - Exit\n")
         try:
@@ -30,7 +30,7 @@ def menu(username):
                 print(Fore.LIGHTCYAN_EX + Style.BRIGHT+ "\nAdding Expense")
                 get_user_expense(username)
             case 3: 
-                print(Fore.LIGHTCYAN_EX + Style.BRIGHT+ "\nSummarizing Expense")
+                print(Fore.LIGHTCYAN_EX + Style.BRIGHT+ "\n====== Expense Summary ======")
                 summarize_expenses(username)
             case 4:
                 print(Fore.LIGHTCYAN_EX + Style.BRIGHT+"Logged out")
@@ -158,11 +158,13 @@ def summarize_expenses(username):
         else:
             sum_categories[key] = user_expense[i]["amount"]
     total_amount = 0.0
+    print("Categories:")
     for i, k in sum_categories.items():
-        print(f"{i}: ${k:.2f}")
+        print(Fore.LIGHTMAGENTA_EX + f"{i + ':':<18} ${k:>7.2f}")
         total_amount += k
  
     print("\n--------------------------------------")
+    print("Totals:")
     
     # Getting dates to get yearly total spent, and monthly total spent
     today = datetime.date.today()
@@ -177,20 +179,20 @@ def summarize_expenses(username):
     for i in range(0, len(user_expense)):
         if start_of_year <= user_expense[i]["date"].date() <= end_of_year:
             yearly_spent += user_expense[i]["amount"]
-    print(f"This Year Total Spent: ${yearly_spent:.2f}")
+    print(Fore.LIGHTMAGENTA_EX +f"{'This Year:':<18} ${yearly_spent:>7.2f}")
     
     # Gets monthly total spent
     monthly_spent = 0
     for i in range(0, len(user_expense)):
         if start_of_month <= user_expense[i]["date"].date() <= end_of_month:
             monthly_spent += user_expense[i]["amount"]
-    print(f"This Month Total Spent: ${monthly_spent:.2f}")
+    print(Fore.LIGHTMAGENTA_EX +f"{'This Month:':<18} ${monthly_spent:>7.2f}")
         
     if not budget_add:
-        print("Remaining Budget: No Budget Added")
+        print(Fore.LIGHTMAGENTA_EX +f"{'Remaining Budget:':<18} {'No Budget Added':>7}")
     else:
         remaining_budget = expenses.get("budget", 0.0)
-        print(f"Remaining Budget: ${remaining_budget:.2f}")
+        print(Fore.LIGHTMAGENTA_EX +f"{'Remaining Budget:':<18} ${remaining_budget:>7.2f}")
         now = datetime.datetime.now()
         days_in_month = calendar.monthrange(now.year, now.month)[1]
         remaining_days = days_in_month - now.day
@@ -198,5 +200,5 @@ def summarize_expenses(username):
         warning = remaining_budget * .80
 
         if total_amount >= warning:
-            print(Fore.RED +"WARNING: YOU'VE SPENT MORE THAN 80% OF YOUR BUDGET")
+            print(Fore.RED +"\nWARNING: YOU'VE SPENT MORE THAN 80% OF YOUR BUDGET")
     
