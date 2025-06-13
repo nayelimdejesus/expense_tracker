@@ -10,9 +10,9 @@ def menu(username):
     # Menu options that display after user logs in
     while True:
         print(Fore.LIGHTYELLOW_EX + "\nWhat would you like to do?")
-        print("1 - Add budget\n")
-        print("2 - Add expense\n")
-        print("3 - Expense Summary\n")
+        print("1 - Add Budget\n")
+        print("2 - Add Expense\n")
+        print("3 - View Expense Summary\n")
         print("4 - Logout\n")
         print("5 - Exit\n")
         try:
@@ -24,7 +24,6 @@ def menu(username):
         # Based on the user's menu selection, it calls the corresponding function
         match option:
             case 1:
-                print(Fore.LIGHTCYAN_EX + Style.BRIGHT+ "\nUpdating / Adding Budget")
                 get_user_budget(username)
             case 2:
                 print(Fore.LIGHTCYAN_EX + Style.BRIGHT+ "\nAdding Expense")
@@ -50,6 +49,7 @@ expense_collection = db["expenses"]
 def get_user_budget(username):
     existing = expense_collection.find_one({"username": username})
     if existing: 
+        print(Fore.LIGHTCYAN_EX + Style.BRIGHT+ "\nUpdating Budget")
         existing_budget = existing.get("budget", 0.0)
         print(Fore.LIGHTMAGENTA_EX + f"Your current budget is set to ${existing_budget:.2f}")
         user_budget = float(input("\nEnter your new monthly budget: "))
@@ -57,37 +57,39 @@ def get_user_budget(username):
             {"username": username},
             {"$set": {"budget": user_budget}}
         )
-        expense_collection.update_one(
-            {"username": username},
-            {"$set": {"budget_added": True}}
-        )
         print(Fore.LIGHTGREEN_EX + f"\nUpdated budget to {user_budget}")
 
     else:
+        print(Fore.LIGHTCYAN_EX + Style.BRIGHT+ "\nAdding Budget")
         user_budget = float(input("Enter your monthly budget: "))
         expense_collection.insert_one({
             "username": username,
             "budget": user_budget,
-            "budget_added":True,
             "expenses": []
             })
-        print(Fore.GREEN + f"Added budget for {username}: {user_budget:.2f}")
+        print(Fore.GREEN + f"Added budget for {username}: ${user_budget:.2f}")
     return user_budget
 
 # Get's users expense information like: expense name, expense amount, category
 def get_user_expense(username):
     budget_exist = expense_collection.find_one({"username": username})
+    
+    # if user did not add a budget it'll tell them to add one
     if not budget_exist:
-        expense_collection.insert_one({
-        "username": username,
-        "budget": 0.0,
-        "budget_added": False,
-        "expenses": []
-    })
-            
-        
+        print(Fore.LIGHTRED_EX + "You must add a budget before adding an expense.")
+        return
+    
     expense_name = input("Enter expense name: ")
-    expense_amount = float(input("Enter expense amount: "))
+    # expense_amount = float(input("Enter expense amount: "))
+    
+    while True: 
+        try:
+            expense_amount = float(input("Enter expense amount: "))
+            if expense_amount:
+                break
+        except ValueError:
+            print(Fore.RED + "\nPlease enter a valid amount")
+            continue
     
     # Displays expense name, and amount that user had entered
     print(f"\nYou've entered the following:" )
@@ -151,7 +153,6 @@ def summarize_expenses(username):
         print("No expenses found.")
         return False
     user_expense = expenses.get("expenses", [])
-    budget_add = expenses.get("budget_added", False)
 
     # Add the expenses amount based on category
     sum_categories = {}
@@ -191,20 +192,17 @@ def summarize_expenses(username):
         if start_of_month <= user_expense[i]["date"].date() <= end_of_month:
             monthly_spent += user_expense[i]["amount"]
     print(Fore.LIGHTMAGENTA_EX +f"{'This Month:':<18} ${monthly_spent:>7.2f}")
-        
-    if not budget_add:
-        print(Fore.LIGHTMAGENTA_EX +f"{'Remaining Budget:':<18} {'No Budget Added':>7}")
-    else:
-        remaining_budget = expenses.get("budget", 0.0)
-        print(Fore.LIGHTMAGENTA_EX +f"{'Remaining Budget:':<18} ${remaining_budget:>7.2f}")
-        now = datetime.datetime.now()
-        days_in_month = calendar.monthrange(now.year, now.month)[1]
-        remaining_days = days_in_month - now.day
-        daily_budget = remaining_budget / remaining_days
-        # 80% of budget
-        warning = remaining_budget * .80
 
-        if total_amount >= warning:
-            print(Fore.RED +"\nWARNING: YOU'VE SPENT MORE THAN 80% OF YOUR BUDGET")
+    remaining_budget = expenses.get("budget", 0.0)
+    print(Fore.LIGHTMAGENTA_EX +f"{'Remaining Budget:':<18} ${remaining_budget:>7.2f}")
+    now = datetime.datetime.now()
+    days_in_month = calendar.monthrange(now.year, now.month)[1]
+    remaining_days = days_in_month - now.day
+    daily_budget = remaining_budget / remaining_days
+    # 80% of budget
+    warning = remaining_budget * .80
+
+    if total_amount >= warning:
+        print(Fore.RED +"\nWARNING: YOU'VE SPENT MORE THAN 80% OF YOUR BUDGET")
         
     
