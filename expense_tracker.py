@@ -27,10 +27,10 @@ def menu(username):
             case 1:
                 get_user_budget(username)
             case 2:
-                print(Fore.LIGHTCYAN_EX + Style.BRIGHT+ "\nAdding Expense")
+                print(Fore.LIGHTCYAN_EX + Style.BRIGHT+ "\n====== Adding Expense ======")
                 get_user_expense(username)
             case 3:
-                print(Fore.LIGHTCYAN_EX + Style.BRIGHT+ "\nDelete Expense")
+                print(Fore.LIGHTCYAN_EX + Style.BRIGHT+ "\n====== Delete Expense ======")
                 delete_expense(username)
             case 4: 
                 print(Fore.LIGHTCYAN_EX + Style.BRIGHT+ "\n====== Expense Summary ======")
@@ -56,7 +56,19 @@ def get_user_budget(username):
         print(Fore.LIGHTCYAN_EX + Style.BRIGHT+ "\nUpdating Budget")
         existing_budget = existing.get("budget", 0.0)
         print(Fore.LIGHTMAGENTA_EX + f"Your current budget is set to ${existing_budget:.2f}")
-        user_budget = float(input("\nEnter your new monthly budget: "))
+        print("\nTo return to main menu, press 'q'.")
+        while True:
+            try:
+                user_budget = (input("\nEnter your new monthly budget: "))
+                if user_budget == "q":
+                    return 
+                new_budget = float(user_budget)
+                if new_budget <= 0:
+                    print(Fore.RED + "Budget must be greater than 0. Please try again.")
+                else:
+                    break
+            except ValueError:
+                print(Fore.RED + f"Enter a valid amount. Please try again.")
         expense_collection.update_one(
             {"username": username},
             {"$set": {"budget": user_budget}}
@@ -103,6 +115,14 @@ def delete_expense(username):
                     {"username": username},
                     {"$pull": {"expenses": {"name": expense_name, "amount": expense_amount, "category": expense_category}}}
                 )
+                stored_budget = expenses.get("budget", 0.0)
+                budget = stored_budget + expense_amount
+                
+                # Update the budget value in the database with the expense amount that was deleted.
+                expense_collection.update_one(
+                    {"username": username},
+                    {"$set": {"budget": budget}}
+                )
                 return
 
     else:
@@ -126,8 +146,10 @@ def get_user_expense(username):
     while True: 
         try:
             expense_amount = float(input("Enter expense amount: "))
-            if expense_amount:
+            if expense_amount > 0:
                 break
+            else:
+                print(Fore.RED + "\nExpense amount must be greater than 0.")
         except ValueError:
             print(Fore.RED + "\nPlease enter a valid amount")
             continue
