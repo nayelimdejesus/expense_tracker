@@ -12,9 +12,10 @@ def menu(username):
         print(Fore.LIGHTYELLOW_EX + "\nWhat would you like to do?")
         print("1 - Add Budget\n")
         print("2 - Add Expense\n")
-        print("3 - View Expense Summary\n")
-        print("4 - Logout\n")
-        print("5 - Exit\n")
+        print("3 - Delete Expense\n")
+        print("4 - View Expense Summary\n")
+        print("5 - Logout\n")
+        print("6 - Exit\n")
         try:
             option = int(input("Enter a number: "))
         except ValueError:
@@ -28,13 +29,16 @@ def menu(username):
             case 2:
                 print(Fore.LIGHTCYAN_EX + Style.BRIGHT+ "\nAdding Expense")
                 get_user_expense(username)
-            case 3: 
+            case 3:
+                print(Fore.LIGHTCYAN_EX + Style.BRIGHT+ "\nDelete Expense")
+                delete_expense(username)
+            case 4: 
                 print(Fore.LIGHTCYAN_EX + Style.BRIGHT+ "\n====== Expense Summary ======")
                 summarize_expenses(username)
-            case 4:
+            case 5:
                 print(Fore.LIGHTCYAN_EX + Style.BRIGHT+"Logged out")
                 return
-            case 5:
+            case 6:
                 print(Fore.LIGHTCYAN_EX + Style.BRIGHT+"Goodbye.")
                 exit(0)
             case _: 
@@ -69,6 +73,43 @@ def get_user_budget(username):
             })
         print(Fore.GREEN + f"Added budget for {username}: ${user_budget:.2f}")
     return user_budget
+
+
+def delete_expense(username):
+    expenses = expense_collection.find_one({"username": username})
+    
+    # If the user has not added any expenses, display "No expenses found"
+    if expenses and expenses.get("expenses"):
+        expenses_entries = expenses.get("expenses")
+        
+        while True:
+            print("Select an expense to delete: ")
+            for i, k in enumerate(expenses_entries):
+                print(f"{i + 1} - {k["category"]}", f"{k["name"]}", f"${k['amount']:.2f}")
+            try:
+                selected_index = int(input("\nEnter a number: ")) - 1
+            except ValueError:
+                print(Fore.RED + "\nPlease enter a valid number.")
+                continue
+            if selected_index in range(len(expenses_entries)):
+                # the expense the user selected
+                selected_expense = expenses_entries[selected_index]
+                expense_name = selected_expense["name"]
+                expense_amount = selected_expense["amount"]
+                expense_category = selected_expense["category"]
+            
+                print(Fore.LIGHTGREEN_EX + f"\nExpense deleted.")
+                expense_collection.update_one(
+                    {"username": username},
+                    {"$pull": {"expenses": {"name": expense_name, "amount": expense_amount, "category": expense_category}}}
+                )
+                return
+
+    else:
+        print(f"No expenses found.")
+        return
+         
+
 
 # Get's users expense information like: expense name, expense amount, category
 def get_user_expense(username):
