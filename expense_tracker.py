@@ -56,7 +56,7 @@ def get_user_budget(username):
         print(Fore.LIGHTCYAN_EX + Style.BRIGHT+ "\n====== Updating Budget ======")
         existing_budget = existing.get("monthly_budget", 0.0)
         existing_remaining = existing.get("remaining_budget", 0.0)
-        expenses_entries = existing.get("expenses")
+        expenses_entries = existing.get("expenses", [])
         print(Fore.LIGHTMAGENTA_EX + f"Monthly budget is set to ${existing_budget:.2f}")
         print(Fore.LIGHTMAGENTA_EX + f"Remaining budget is currently ${existing_remaining:.2f}")
         
@@ -64,14 +64,15 @@ def get_user_budget(username):
         while True:
             try:
                 user_budget = (input("\nEnter your new monthly budget: "))
-                if user_budget == "q":
+                if user_budget.lower() == "q":
                     return 
                 new_budget = float(user_budget)
                 if new_budget <= 0:
                     print(Fore.RED + "Budget must be greater than 0. Please try again.")
+                    continue
                 # if the user has expenses for this month, add up all amounts of this month then subtract it from the budget that was added.
                 # update the database after the calculation
-                elif expenses_entries:
+                if expenses_entries:
                     diff = existing_budget - existing_remaining
                     updated_remaining = new_budget - diff
                     expense_collection.update_one(
@@ -95,14 +96,24 @@ def get_user_budget(username):
 
     else:
         print(Fore.LIGHTCYAN_EX + Style.BRIGHT+ "\n====== Adding Budget ======")
-        user_budget = float(input("Enter your monthly budget: "))
-        expense_collection.insert_one({
-            "username": username,
-            "monthly_budget": user_budget,
-            "remaining_budget":user_budget,
-            "expenses": []
-            })
-        print(Fore.YELLOW + f"\nMonthly budget set to: ${user_budget:.2f}")
+        while True:
+            try:
+                user_budget = float(input("Enter your monthly budget: "))
+                if user_budget <= 0:
+                    print(Fore.RED + "\nBudget must be greater than 0. Please try again.")
+                    continue
+                expense_collection.insert_one({
+                    "username": username,
+                    "monthly_budget": user_budget,
+                    "remaining_budget":user_budget,
+                    "expenses": []
+                    })
+                print(Fore.YELLOW + f"\nMonthly budget set to: ${user_budget:.2f}")
+                break
+            except ValueError:
+                print(Fore.RED + f"\nEnter a valid amount. Please try again.")
+
+                
     return user_budget
 
 
