@@ -66,6 +66,9 @@ def login():
             if result and pwd != "":
                 print(Fore.GREEN+f"\nLogged in as {username}")
                 return username
+        else:
+            print(Fore.RED + "\nUsername does not exist. Please try again.")
+            continue
         
         count += 1
         if count == 3:

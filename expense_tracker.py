@@ -9,13 +9,13 @@ from db import db
 def menu(username):
     # Menu options that display after user logs in
     while True:
-        print(Fore.LIGHTYELLOW_EX + "\nWhat would you like to do?")
-        print("1 - Add Budget\n")
-        print("2 - Add Expense\n")
-        print("3 - Delete Expense\n")
-        print("4 - View Expense Summary\n")
-        print("5 - Logout\n")
-        print("6 - Exit\n")
+        print(Fore.LIGHTCYAN_EX + "\nWhat would you like to do?")
+        print(Fore.LIGHTMAGENTA_EX +"1 - Add Budget\n")
+        print(Fore.LIGHTMAGENTA_EX +"2 - Add Expense\n")
+        print(Fore.LIGHTMAGENTA_EX +"3 - Delete Expense\n")
+        print(Fore.LIGHTMAGENTA_EX +"4 - View Expense Summary\n")
+        print(Fore.LIGHTMAGENTA_EX +"5 - Logout\n")
+        print(Fore.LIGHTMAGENTA_EX +"6 - Exit\n")
         try:
             option = int(input("Enter a number: "))
         except ValueError:
@@ -57,10 +57,10 @@ def get_user_budget(username):
         existing_budget = existing.get("monthly_budget", 0.0)
         existing_remaining = existing.get("remaining_budget", 0.0)
         expenses_entries = existing.get("expenses")
-        print(Fore.LIGHTMAGENTA_EX + f"Your current monthly budget is set to ${existing_budget:.2f}")
-        print(Fore.LIGHTMAGENTA_EX + f"Your current remaining budget is currently ${existing_remaining:.2f}")
+        print(Fore.LIGHTMAGENTA_EX + f"Monthly budget is set to ${existing_budget:.2f}")
+        print(Fore.LIGHTMAGENTA_EX + f"Remaining budget is currently ${existing_remaining:.2f}")
         
-        print("\nTo return to main menu, press 'q'.")
+        print(Fore.LIGHTYELLOW_EX + "\nTo return to main menu, press 'q'.")
         while True:
             try:
                 user_budget = (input("\nEnter your new monthly budget: "))
@@ -91,7 +91,7 @@ def get_user_budget(username):
             {"username": username},
             {"$set": {"budget": new_budget}}
         )
-        print(Fore.LIGHTGREEN_EX + f"\nUpdated budget to {user_budget:.2f}")
+        print(Fore.YELLOW + f"\nUpdated budget to {new_budget:.2f}")
 
     else:
         print(Fore.LIGHTCYAN_EX + Style.BRIGHT+ "\n====== Adding Budget ======")
@@ -102,7 +102,7 @@ def get_user_budget(username):
             "remaining_budget":user_budget,
             "expenses": []
             })
-        print(Fore.GREEN + f"Your monthly budget is set to: ${user_budget:.2f}")
+        print(Fore.YELLOW + f"\nMonthly budget set to: ${user_budget:.2f}")
     return user_budget
 
 
@@ -113,41 +113,44 @@ def delete_expense(username):
     if expenses and expenses.get("expenses"):
         expenses_entries = expenses.get("expenses")
         
-        print("To return to main menu, press 'q'.\n")
+        print(Fore.LIGHTYELLOW_EX + "To return to main menu, press 'q'.\n")
         while True:
-            print("Select an expense to delete: ")
+            print(Fore.LIGHTCYAN_EX + "Select an expense to delete: ")
             for i, k in enumerate(expenses_entries):
-                print(f"{i + 1} - {k["category"]}", f"{k["name"]}", f"${k['amount']:.2f}")
+                print( f"{i + 1} - {k["category"]}", f"{k["name"]}", f"${k['amount']:.2f}")
             try:
                 selected_index = (input("\nEnter a number: "))
 
                 if selected_index == "q":
                     return
                 deleted_expense = int(selected_index) - 1
+                
+                if deleted_expense in range(len(expenses_entries)):
+                    # the expense the user selected
+                    selected_expense = expenses_entries[deleted_expense]
+                    expense_name = selected_expense["name"]
+                    expense_amount = selected_expense["amount"]
+                    expense_category = selected_expense["category"]
+            
+                    print(Fore.YELLOW+ f"\nDeleted Expense: {expense_category}, {expense_name}, ${expense_amount:.2f}")
+                    expense_collection.update_one(
+                        {"username": username},
+                        {"$pull": {"expenses": {"name": expense_name, "amount": expense_amount, "category": expense_category}}}
+                    )
+                    remaining_budget = expenses.get("remaining_budget", 0.0)
+                    new_remaining = remaining_budget + expense_amount
+                
+                    # Update the budget value in the database with the expense amount that was deleted.
+                    expense_collection.update_one(
+                        {"username": username},
+                        {"$set": {"remaining_budget": new_remaining}}
+                    )
+                    return
+                else:
+                    print(Fore.RED + "\nPlease enter a valid number.")
             except ValueError:
                 print(Fore.RED + "\nPlease enter a valid number.")
                 continue
-            if deleted_expense in range(len(expenses_entries)):
-                # the expense the user selected
-                selected_expense = expenses_entries[deleted_expense]
-                expense_name = selected_expense["name"]
-                expense_amount = selected_expense["amount"]
-                expense_category = selected_expense["category"]
-            
-                print(Fore.LIGHTGREEN_EX + f"\nDeleted Expense: {expense_category}, {expense_name}, ${expense_amount:.2f}")
-                expense_collection.update_one(
-                    {"username": username},
-                    {"$pull": {"expenses": {"name": expense_name, "amount": expense_amount, "category": expense_category}}}
-                )
-                remaining_budget = expenses.get("remaining_budget", 0.0)
-                new_remaining = remaining_budget + expense_amount
-                
-                # Update the budget value in the database with the expense amount that was deleted.
-                expense_collection.update_one(
-                    {"username": username},
-                    {"$set": {"remaining_budget": new_remaining}}
-                )
-                return
 
     else:
         print(f"No expenses found.")
@@ -164,7 +167,7 @@ def get_user_expense(username):
         print(Fore.LIGHTRED_EX + "You must add a budget before adding an expense.")
         return
     
-    print("To return to main menu, press 'q'.\n")
+    print(Fore.LIGHTYELLOW_EX + "To return to main menu, press 'q'.\n")
 
     expense_name = input("Enter expense name: ")
     
@@ -183,10 +186,10 @@ def get_user_expense(username):
             print(Fore.RED + "\nPlease enter a valid amount")
             continue
     
-    # Displays expense name, and amount that user had entered
-    print(f"\nYou've entered the following:" )
-    print(f"Expense Name: {expense_name}")
-    print(f"Expense Amount: {expense_amount:.2f}\n")
+    # # Displays expense name, and amount that user had entered
+    # print(Fore.YELLOW + Style.BRIGHT + f"\nYou've entered the following:" )
+    # print(Fore.LIGHTYELLOW_EX + f"Expense Name: {expense_name}")
+    # print(Fore.LIGHTYELLOW_EX + f"Expense Amount: {expense_amount:.2f}\n")
 
     expense_categories = [
         "Food", "Home", "Work", "Fun", "Misc", "Travel"
@@ -194,9 +197,9 @@ def get_user_expense(username):
     
     # Prompts user to select an expense category
     while True:
-        print("Select a category: ")
+        print(Fore.LIGHTCYAN_EX + "\nSelect a category: ")
         for i, category_name in enumerate(expense_categories):
-            print(f"{i + 1}.{category_name}")
+            print(Fore.LIGHTMAGENTA_EX + f"{i + 1}.{category_name}\n")
         try:
             selected_index = int(input("Enter a category number: ")) - 1
         except ValueError:
@@ -217,7 +220,7 @@ def get_user_expense(username):
                 {"$push": {"expenses": new_expense}}
             )
 
-            print(Fore.GREEN + f"Added expense for {username}: {expense_name}, {expense_amount:.2f}, {selected_category}")
+            print(Fore.YELLOW + f"\nExpense added: {selected_category}, {expense_name}, ${expense_amount:.2f}")
             
             stored_remaining = budget_exist.get("remaining_budget", 0.0)
             # Subtract the expense amount from the current budget
@@ -227,7 +230,7 @@ def get_user_expense(username):
                 {"username": username},
                 {"$set": {"remaining_budget": new_remaining}}
             )
-            print(Fore.LIGHTMAGENTA_EX + f"Your remaining budget is: ${new_remaining}")
+            print(Fore.YELLOW + f"Remaining budget: ${new_remaining}")
             return new_expense
 
         else:
@@ -257,7 +260,7 @@ def summarize_expenses(username):
     total_amount = 0.0
     print("Categories:")
     for i, k in sum_categories.items():
-        print(Fore.LIGHTMAGENTA_EX + f"{i + ':':<18} ${k:>7.2f}")
+        print(Fore.YELLOW+ f"{i + ':':<18} ${k:>7.2f}")
         total_amount += k
  
     print("\n--------------------------------------")
@@ -276,17 +279,17 @@ def summarize_expenses(username):
     for i in range(0, len(user_expense)):
         if start_of_year <= user_expense[i]["date"].date() <= end_of_year:
             yearly_spent += user_expense[i]["amount"]
-    print(Fore.LIGHTMAGENTA_EX +f"{'This Year:':<18} ${yearly_spent:>7.2f}")
+    print(Fore.YELLOW +f"{'This Year:':<18} ${yearly_spent:>7.2f}")
     
     # Gets monthly total spent
     monthly_spent = 0
     for i in range(0, len(user_expense)):
         if start_of_month <= user_expense[i]["date"].date() <= end_of_month:
             monthly_spent += user_expense[i]["amount"]
-    print(Fore.LIGHTMAGENTA_EX +f"{'This Month:':<18} ${monthly_spent:>7.2f}")
+    print(Fore.YELLOW +f"{'This Month:':<18} ${monthly_spent:>7.2f}")
 
     remaining_budget = expenses.get("remaining_budget", 0.0)
-    print(Fore.LIGHTMAGENTA_EX +f"{'Remaining Budget:':<18} ${remaining_budget:>7.2f}")
+    print(Fore.YELLOW +f"{'Remaining Budget:':<18} ${remaining_budget:>7.2f}")
     now = datetime.datetime.now()
     days_in_month = calendar.monthrange(now.year, now.month)[1]
     remaining_days = days_in_month - now.day

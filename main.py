@@ -8,12 +8,12 @@ def main():
     # List options for user to choose
     print(Fore.LIGHTCYAN_EX + Style.BRIGHT+ "Welcome to the Expense App")
     while True:
-        print(Fore.LIGHTYELLOW_EX +"\nMake a Selection:")
-        print("1 - Register\n")
-        print("2 - Login\n")
-        print("3 - Exit\n")
+        print(Fore.LIGHTCYAN_EX +"\nMake a Selection:")
+        print(Fore.LIGHTMAGENTA_EX + "1 - Register\n")
+        print(Fore.LIGHTMAGENTA_EX +"2 - Login\n")
+        print(Fore.LIGHTMAGENTA_EX +"3 - Exit\n")
         try:
-            user_choice = int(input("Enter a number: "))
+            user_choice = int(input("Enter a number: " + Style.RESET_ALL))
         except ValueError:
             print(Fore.RED + "\nPlease enter a valid number.")
             continue
