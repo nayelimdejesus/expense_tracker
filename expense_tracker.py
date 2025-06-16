@@ -139,7 +139,7 @@ def delete_expense(username):
             try:
                 selected_index = input("\nEnter a number: ")
 
-                if selected_index == "q":
+                if selected_index.lower() == "q":
                     return
                 deleted_index = int(selected_index) -1
                 
@@ -194,7 +194,7 @@ def get_user_expense(username):
 
     expense_name = input("Enter expense name: ")
     
-    if expense_name == "q":
+    if expense_name.lower() == "q":
         return
     # expense_amount = float(input("Enter expense amount: "))
     
@@ -320,7 +320,10 @@ def summarize_expenses(username):
     # 80% of budget
     warning = remaining_budget * .80
 
-    if total_amount >= warning:
-        print(Fore.RED +"\nWARNING: YOU'VE SPENT MORE THAN 80% OF YOUR BUDGET")
+    if total_amount >= warning and remaining_budget > 0:
+        print(Fore.RED +"\nWARNING: YOU'VE SPENT MORE THAN 80% OF YOUR MONTHLY BUDGET.")
+    elif remaining_budget < 0:
+        print(Fore.RED +"\nALERT: YOU'VE EXCEEDED YOUR MONTHLY BUDGET.")
+        
         
     
