@@ -1,5 +1,5 @@
 import calendar
-import datetime 
+import datetime
 
 from colorama import Fore, Back, Style, init
 from expense import Expense
@@ -87,7 +87,7 @@ def get_user_budget(username):
                 else:
                     break
             except ValueError:
-                print(Fore.RED + f"Enter a valid amount. Please try again.")
+                print(Fore.RED + f"\nEnter a valid amount. Please try again.")
         expense_collection.update_one(
             {"username": username},
             {"$set": {"budget": new_budget}}
@@ -122,32 +122,39 @@ def delete_expense(username):
     
     # If the user has not added any expenses, display "No expenses found"
     if expenses and expenses.get("expenses"):
-        expenses_entries = expenses.get("expenses")
+        expenses_entries = expenses.get("expenses", [])
         
         print(Fore.LIGHTYELLOW_EX + "To return to main menu, press 'q'.\n")
         while True:
             print(Fore.LIGHTCYAN_EX + "Select an expense to delete: ")
             for i, k in enumerate(expenses_entries):
-                print( f"{i + 1} - {k["category"]}", f"{k["name"]}", f"${k['amount']:.2f}")
+                date_obj = k["date"]
+                date_format = date_obj.strftime("%Y-%m-%d")
+                print( f"{i + 1} - Date Added: {date_format}, {k["category"]}", f"{k["name"]}", f"${k['amount']:.2f}")
             try:
-                selected_index = (input("\nEnter a number: "))
+                selected_index = input("\nEnter a number: ")
 
                 if selected_index == "q":
                     return
-                deleted_expense = int(selected_index) - 1
+                deleted_index = int(selected_index) -1
                 
-                if deleted_expense in range(len(expenses_entries)):
+                if deleted_index in range(len(expenses_entries)):
                     # the expense the user selected
-                    selected_expense = expenses_entries[deleted_expense]
+                    
+                    selected_expense = expenses_entries[deleted_index]
                     expense_name = selected_expense["name"]
                     expense_amount = selected_expense["amount"]
                     expense_category = selected_expense["category"]
-            
-                    print(Fore.YELLOW+ f"\nDeleted Expense: {expense_category}, {expense_name}, ${expense_amount:.2f}")
+                    
+                    
+                    del expenses_entries[deleted_index]
+                    
                     expense_collection.update_one(
                         {"username": username},
-                        {"$pull": {"expenses": {"name": expense_name, "amount": expense_amount, "category": expense_category}}}
+                        {"$set": {"expenses": expenses_entries}}
                     )
+            
+                    print(Fore.YELLOW+ f"\nDeleted Expense: {expense_category}, {expense_name}, ${expense_amount:.2f}")
                     remaining_budget = expenses.get("remaining_budget", 0.0)
                     new_remaining = remaining_budget + expense_amount
                 
