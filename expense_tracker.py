@@ -85,13 +85,18 @@ def get_user_budget(username):
                     )
                     break
                 else:
+                    expense_collection.update_one(
+                        {"username": username},
+                        {"$set": {"monthly_budget": new_budget}}
+                    )
+                    expense_collection.update_one(
+                        {"username": username},
+                        {"$set": {"remaining_budget": new_budget}}
+                    )
                     break
             except ValueError:
                 print(Fore.RED + f"\nEnter a valid amount. Please try again.")
-        expense_collection.update_one(
-            {"username": username},
-            {"$set": {"budget": new_budget}}
-        )
+
         print(Fore.YELLOW + f"\nUpdated budget to {new_budget:.2f}")
 
     else:
